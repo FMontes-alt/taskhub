@@ -26,7 +26,7 @@ export default function Welcome() {
                             <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
                             {tarea.toLowerCase().includes('laravel') ? (
                                 <span>
-                                    {/* Regex: \b...\b delimita palabras completas. ( ) captura. g=global, i=insensitive, me modificado algo todo me da pereza*/}
+                                    {/* Regex: \b...\b delimita palabras completas. ( ) captura. g=global, i=insensitive, he modificado algo, todo me da pereza*/}
                                     {tarea.split(/(\blaravel\b)/gi).map((part, i) => 
                                         part.toLowerCase() === 'laravel' ? (
                                             <span key={i} className="text-blue-600 font-bold">{part}</span>
