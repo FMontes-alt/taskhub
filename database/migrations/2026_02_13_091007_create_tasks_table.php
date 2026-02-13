@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id(); // ID autoincremental
             $table->string('title'); // Título de la tarea
+            $table->text('description')->nullable(); // Descripción opcional
             $table->boolean('is_completed')->default(false); // Estado: ¿Hecha?
             $table->timestamps(); // Crea 'created_at' y 'updated_at' automáticamente
         });
