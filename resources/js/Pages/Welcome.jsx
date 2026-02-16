@@ -1,60 +1,66 @@
-import { Head } from "@inertiajs/react";
-import { useState } from "react";
+import { Head, useForm, router } from "@inertiajs/react";
 import Stats from "@/Components/Stats";
 import TaskItem from "@/Components/TaskItem";
 
-export default function Welcome() {
-    // --- ESTADO ---
-    const [tasks, setTasks] = useState([]);
-    const [newTaskTitle, setNewTaskTitle] = useState("");
+export default function Welcome({ tasks }) {
+    // --- FORM PARA AÑADIR NUEVA TAREA ---
+    const { data, setData, post, reset, processing } = useForm({
+        title: "",
+        description: "",
+    });
 
     // --- LÓGICA / FUNCIONES ---
 
     // 1. Añadir Tarea
-    const addTask = () => {
-        if (newTaskTitle.trim() === "") return;
+    const addTask = (e) => {
+        e.preventDefault();
+        if (data.title.trim() === "") return;
 
-        const newTask = {
-            id: Date.now(), // Usamos la fecha como ID único temporal
-            title: newTaskTitle,
-            completed: false,
-        };
-
-        setTasks([...tasks, newTask]);
-        setNewTaskTitle(""); // Limpiar input
+        post(route("tasks.store"), {
+            preserveScroll: true,
+            onSuccess: () => reset(),
+        });
     };
 
     // 2. Marcar/Desmarcar como completada
     const toggleTask = (id) => {
-        setTasks(
-            tasks.map((task) =>
-                task.id === id ? { ...task, completed: !task.completed } : task,
-            ),
+        router.patch(
+            route("tasks.toggle", id),
+            {},
+            {
+                preserveScroll: true,
+            },
         );
     };
 
     // 3. Actualizar título (Editar)
     const updateTaskTitle = (id, newTitle) => {
-        setTasks(
-            tasks.map((task) =>
-                task.id === id ? { ...task, title: newTitle } : task,
-            ),
+        router.put(
+            route("tasks.update", id),
+            { title: newTitle },
+            {
+                preserveScroll: true,
+            },
         );
     };
 
-    // 4. Eliminar tarea (Opcional, pero necesario para limpiar completadas)
+    // 4. Eliminar tarea
     const removeTask = (id) => {
-        setTasks(tasks.filter((task) => task.id !== id));
+        router.delete(route("tasks.destroy", id), {
+            preserveScroll: true,
+        });
     };
 
     // 5. Limpiar lista (Solo completadas)
     const clearCompleted = () => {
-        setTasks(tasks.filter((task) => !task.completed));
+        router.delete(route("tasks.clearCompleted"), {
+            preserveScroll: true,
+        });
     };
 
     // --- CÁLCULO DE ESTADÍSTICAS ---
     const totalTasks = tasks.length;
-    const completedTasks = tasks.filter((t) => t.completed).length;
+    const completedTasks = tasks.filter((t) => t.is_completed).length;
     const progress =
         totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
@@ -92,7 +98,7 @@ export default function Welcome() {
                             </div>
                         </div>
 
-                        {/* Botón Limpiar Completadas (Top right for cleaner look on desktop) */}
+                        {/* Botón Limpiar Completadas */}
                         {completedTasks > 0 && (
                             <button
                                 onClick={clearCompleted}
@@ -127,8 +133,8 @@ export default function Welcome() {
                     {/* Main Content: Input + List */}
                     <div className="bg-white/90 backdrop-blur-xl shadow-2xl rounded-3xl overflow-hidden border border-white/50">
                         <div className="p-6 md:p-8">
-                            {/* Input y Botón de Añadir */}
-                            <div className="relative mb-8">
+                            {/* Formulario de Añadir */}
+                            <form onSubmit={addTask} className="relative mb-8">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -149,22 +155,21 @@ export default function Welcome() {
                                     type="text"
                                     className="block w-full pl-10 pr-24 py-4 text-lg border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all shadow-inner"
                                     placeholder="¿Qué tienes pendiente hoy?"
-                                    value={newTaskTitle}
+                                    value={data.title}
                                     onChange={(e) =>
-                                        setNewTaskTitle(e.target.value)
-                                    }
-                                    onKeyDown={(e) =>
-                                        e.key === "Enter" && addTask()
+                                        setData("title", e.target.value)
                                     }
                                 />
                                 <button
-                                    onClick={addTask}
-                                    disabled={newTaskTitle.trim() === ""}
+                                    type="submit"
+                                    disabled={
+                                        data.title.trim() === "" || processing
+                                    }
                                     className="absolute right-2 top-2 bottom-2 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg shadow-md transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Añadir
                                 </button>
-                            </div>
+                            </form>
 
                             {/* Lista de Tareas */}
                             <div className="space-y-4">
