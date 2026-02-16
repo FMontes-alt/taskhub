@@ -29,7 +29,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
 
     return (
         <div
-            className={`group flex items-center justify-between p-4 mb-3 bg-white border rounded-xl shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.01] ${task.completed ? "bg-gray-50 border-gray-100 opacity-75" : "border-gray-200 hover:border-blue-200"}`}
+            className={`group flex items-center justify-between p-4 mb-3 bg-white border rounded-xl shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.01] ${task.is_completed ? "bg-gray-50 border-gray-100 opacity-75" : "border-gray-200 hover:border-blue-200"}`}
         >
             <div className="flex items-center flex-1">
                 {/* Checkbox personalizado */}
@@ -37,7 +37,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
                     <input
                         type="checkbox"
                         className="peer h-6 w-6 cursor-pointer appearance-none rounded-full border-2 border-gray-300 transition-all checked:border-green-500 checked:bg-green-500 hover:border-green-400"
-                        checked={task.completed}
+                        checked={task.is_completed}
                         onChange={() => onToggle(task.id)}
                     />
                     <svg
@@ -68,11 +68,11 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
                 ) : (
                     <span
                         className={`text-lg cursor-pointer select-none flex-1 transition-colors duration-200 ${
-                            task.completed
+                            task.is_completed
                                 ? "text-gray-400 line-through decoration-gray-300"
                                 : "text-gray-700 font-medium group-hover:text-blue-900"
                         }`}
-                        onClick={() => !task.completed && setIsEditing(true)}
+                        onClick={() => !task.is_completed && setIsEditing(true)}
                     >
                         {task.title}
                     </span>
