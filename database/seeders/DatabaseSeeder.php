@@ -15,6 +15,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Seed tasks with example data
+        $this->call([
+            TaskSeeder::class,
+        ]);
+
         // User::factory(10)->create();
 
         User::factory()->create([
